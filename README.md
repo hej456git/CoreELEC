@@ -1,3 +1,17 @@
+## Full3D frame-packing support
+
+This fork contains an experimental implementation for converting **Full-SBS (3840×1080)** and **Full-TAB/OU (1920×2160)** 3D video into genuine **1080p HDMI frame-packed 3D**, preserving full 1920×1080 resolution per eye.
+
+The implementation uses Kodi to detect the Full3D layout and the Amlogic video pipeline to feed the two eye regions through VD1/VD2 into the existing HDMI frame-packing path. Normal MVC frame-packed 3D playback is retained.
+
+Current testing has been performed on a **Nokia Streaming Box 8010 (Amlogic S905X4)** with CoreELEC 22 and an active-shutter 3D projector. Full-SBS, Full-TAB and MVC playback have all been tested successfully.
+
+The Full3D work is currently maintained in the `full3d` branch and uses corresponding `full3d` branches of the [xbmc](https://github.com/hej456git/xbmc/tree/full3d) and [common_drivers](https://github.com/hej456git/common_drivers/tree/full3d) forks.
+
+For project notes, releases and test material, see:
+[coreelec-full3d-framepacking](https://github.com/hej456git/coreelec-full3d-framepacking)
+
+
 # CoreELEC
 
 CoreELEC is a 'Just enough OS' Linux distribution for running the award-winning [Kodi](https://kodi.tv) software on popular low-cost hardware. CoreELEC is a minor fork of [LibreELEC](https://libreelec.tv), it's built by the community for the community. [CoreELEC website](http://coreelec.org).
