@@ -4,7 +4,7 @@ This fork contains an experimental implementation for converting **Full-SBS (384
 
 The implementation uses Kodi to detect the Full3D layout and the Amlogic video pipeline to feed the two eye regions through VD1/VD2 into the existing HDMI frame-packing path. Normal MVC frame-packed 3D playback is retained.
 
-Current testing has been performed on a **Nokia Streaming Box 8010 (Amlogic S905X4)** with CoreELEC 22 and an active-shutter 3D projector. Full-SBS, Full-TAB and MVC playback have all been tested successfully.
+Current testing has been performed on a **Nokia 8010 (Amlogic S905X4)** with CoreELEC 22 and an active-shutter 3D projector. Full-SBS, Full-TAB and MVC playback have all been tested successfully.
 
 The Full3D work is currently maintained in the `full3d` branch and uses corresponding `full3d` branches of the [xbmc](https://github.com/hej456git/xbmc/tree/full3d) and [common_drivers](https://github.com/hej456git/common_drivers/tree/full3d) forks.
 
