@@ -17,6 +17,7 @@ make_target() {
 
   export PATH=${TOOLCHAIN}/lib/gcc7-linaro-aarch64-elf/bin:${TOOLCHAIN}/lib/gcc-riscv-none-embed/bin:${PATH}
 
+  setup_pkg_config_host
   DEBUG=${PKG_DEBUG} CROSS_COMPILE=aarch64-elf- HOSTCFLAGS="-I${TOOLCHAIN}/include" \
     HOSTLDFLAGS="${HOST_LDFLAGS}" CROSS_COMPILE_PATH="" \
     source fip/mk_script.sh s7d_odroidc5 --disable-bl33z --build-nogit

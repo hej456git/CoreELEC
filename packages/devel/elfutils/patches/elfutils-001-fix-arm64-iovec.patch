@@ -1,0 +1,26 @@
+diff --git a/backends/aarch64_initreg.c b/backends/aarch64_initreg.c
+index a6badbb4..539a6366 100644
+--- a/backends/aarch64_initreg.c
++++ b/backends/aarch64_initreg.c
+@@ -33,7 +33,7 @@
+ #include "system.h"
+ #include <assert.h>
+ #if defined(__aarch64__) && defined(__linux__)
+-# include <linux/uio.h>
++# include <sys/uio.h>
+ # include <sys/user.h>
+ # include <sys/ptrace.h>
+ # include <asm/ptrace.h>
+diff --git a/backends/arm_initreg.c b/backends/arm_initreg.c
+index efcabaf6..062bb9e0 100644
+--- a/backends/arm_initreg.c
++++ b/backends/arm_initreg.c
+@@ -38,7 +38,7 @@
+ #endif
+ 
+ #ifdef __aarch64__
+-# include <linux/uio.h>
++# include <sys/uio.h>
+ # include <sys/user.h>
+ # include <sys/ptrace.h>
+ /* Deal with old glibc defining user_pt_regs instead of user_regs_struct.  */
