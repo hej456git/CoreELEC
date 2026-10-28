@@ -1,0 +1,98 @@
+--- a/xbmc/cores/VideoPlayer/VideoRenderers/OverlayRenderer.cpp
++++ b/xbmc/cores/VideoPlayer/VideoRenderers/OverlayRenderer.cpp
+@@ -598,6 +598,16 @@
+     e.renderedFrameWidth = rOpts.frameWidth;
+     e.renderedFrameHeight = rOpts.frameHeight;
+ 
++    // Correct conventional half-resolution stereo text subtitles only.
++    // Full3D, 2D and ASS/SSA overlays remain unchanged.
++    const bool halfResolution =
++        o.IsOverlayType(DVDOVERLAY_TYPE_TEXT) &&
++        rOpts.sourceHeight > 0 &&
++        rOpts.sourceWidth / rOpts.sourceHeight > 1.2f;
++
++    if (halfResolution && m_stereomode == "left_right")
++      e.renderedFrameWidth *= 2.0f;
++
+     // Pull the libass output for this PTS. Cached on the SElement until
+     // ConvertLibass consumes it later in this frame's GUI walk.
+     int currentChange = 0;
+@@ -643,6 +653,78 @@
+ 
+   std::shared_ptr<COverlay> overlay =
+       COverlay::Create(e.renderedImages, e.renderedFrameWidth, e.renderedFrameHeight);
++
++  // Correct conventional stereo subtitle scaling around the actual
++  // subtitle image center, preserving its displayed position.
++  // Full3D, 2D and ASS/SSA overlays are unaffected.
++  if (overlay && o.IsOverlayType(DVDOVERLAY_TYPE_TEXT))
++  {
++    const bool halfResolution =
++        m_rs.Height() > 0 &&
++        m_rs.Width() / m_rs.Height() > 1.2f;
++    const bool halfSbs = halfResolution && m_stereomode == "left_right";
++    const bool halfTab = halfResolution && m_stereomode == "top_bottom";
++
++    if (halfSbs || halfTab)
++    {
++      int minX = 0;
++      int minY = 0;
++      int maxX = 0;
++      int maxY = 0;
++      bool hasBounds = false;
++
++      for (const ASS_Image* img = e.renderedImages; img; img = img->next)
++      {
++        if ((img->color & 0xff) == 0xff || img->w == 0 || img->h == 0)
++          continue;
++
++        const int left = img->dst_x;
++        const int top = img->dst_y;
++        const int right = left + img->w;
++        const int bottom = top + img->h;
++
++        if (!hasBounds)
++        {
++          minX = left;
++          minY = top;
++          maxX = right;
++          maxY = bottom;
++          hasBounds = true;
++        }
++        else
++        {
++          minX = std::min(minX, left);
++          minY = std::min(minY, top);
++          maxX = std::max(maxX, right);
++          maxY = std::max(maxY, bottom);
++        }
++      }
++
++      if (hasBounds)
++      {
++        if (halfSbs)
++        {
++          const float centerX = (minX + maxX) * 0.5f;
++          overlay->m_x = centerX / e.renderedFrameWidth;
++        }
++        else if (halfTab)
++        {
++          // Size relative to the small, correctly proportioned version.
++          constexpr float subtitleSize = 1.5f;
++          constexpr float scaleX = subtitleSize;
++          constexpr float scaleY = 1.0f;
++          const float centerX = (minX + maxX) * 0.5f / e.renderedFrameWidth;
++          const float centerY = (minY + maxY) * 0.5f / e.renderedFrameHeight;
++
++          overlay->m_width = scaleX;
++          overlay->m_height = scaleY;
++          overlay->m_x = (1.0f - scaleX) * centerX;
++          overlay->m_y = (1.0f - scaleY) * centerY;
++        }
++
++      }
++    }
++  }
+ 
+   m_textureCache[m_textureid] = overlay;
+   o.m_textureid = m_textureid;
