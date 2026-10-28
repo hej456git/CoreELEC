@@ -3,7 +3,7 @@
 @@ -520,9 +520,25 @@
      if (!ovAss.GetLibassHandler())
        continue;
- 
+
 -    const SUBTITLES::STYLE::renderOpts rOpts{GetRenderOptions(ovAss, *m_overlayStyle, resolution)};
 +    SUBTITLES::STYLE::renderOpts rOpts{GetRenderOptions(ovAss, *m_overlayStyle, resolution)};
      e.renderedFrameWidth = rOpts.frameWidth;
@@ -24,11 +24,11 @@
 +      rOpts.videoWidth *= 2.0f;
 +      e.renderedFrameWidth = rOpts.frameWidth;
 +    }
- 
+
      // Pull the libass output for this PTS. Cached on the SElement until
      // ConvertLibass consumes it later in this frame's GUI walk.
 @@ -569,6 +585,78 @@
- 
+
    std::shared_ptr<COverlay> overlay =
        COverlay::Create(e.renderedImages, e.renderedFrameWidth, e.renderedFrameHeight);
 +
@@ -103,6 +103,6 @@
 +      }
 +    }
 +  }
- 
+
    m_textureCache[m_textureid] = overlay;
    o.m_textureid = m_textureid;
