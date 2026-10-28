@@ -1,9 +1,14 @@
 --- a/xbmc/cores/VideoPlayer/VideoRenderers/OverlayRenderer.cpp
 +++ b/xbmc/cores/VideoPlayer/VideoRenderers/OverlayRenderer.cpp
-@@ -598,6 +598,16 @@
+@@ -520,9 +520,25 @@
+     if (!ovAss.GetLibassHandler())
+       continue;
+ 
+-    const SUBTITLES::STYLE::renderOpts rOpts{GetRenderOptions(ovAss, *m_overlayStyle, resolution)};
++    SUBTITLES::STYLE::renderOpts rOpts{GetRenderOptions(ovAss, *m_overlayStyle, resolution)};
      e.renderedFrameWidth = rOpts.frameWidth;
      e.renderedFrameHeight = rOpts.frameHeight;
- 
++
 +    // Correct conventional half-resolution stereo text subtitles only.
 +    // Full3D, 2D and ASS/SSA overlays remain unchanged.
 +    const bool halfResolution =
@@ -12,12 +17,17 @@
 +        rOpts.sourceWidth / rOpts.sourceHeight > 1.2f;
 +
 +    if (halfResolution && m_stereomode == "left_right")
-+      e.renderedFrameWidth *= 2.0f;
-+
++    {
++      // Double libass layout width for hSBS SRT line wrapping.
++      // Keep frame height unchanged to preserve font size.
++      rOpts.frameWidth *= 2.0f;
++      rOpts.videoWidth *= 2.0f;
++      e.renderedFrameWidth = rOpts.frameWidth;
++    }
+ 
      // Pull the libass output for this PTS. Cached on the SElement until
      // ConvertLibass consumes it later in this frame's GUI walk.
-     int currentChange = 0;
-@@ -643,6 +653,78 @@
+@@ -569,6 +585,78 @@
  
    std::shared_ptr<COverlay> overlay =
        COverlay::Create(e.renderedImages, e.renderedFrameWidth, e.renderedFrameHeight);
@@ -73,7 +83,7 @@
 +        if (halfSbs)
 +        {
 +          const float centerX = (minX + maxX) * 0.5f;
-+          overlay->m_x = centerX / e.renderedFrameWidth;
++          overlay->m_x = centerX / e.renderedFrameWidth - 0.5f;
 +        }
 +        else if (halfTab)
 +        {
